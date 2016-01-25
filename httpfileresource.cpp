@@ -22,6 +22,8 @@ HttpFileResource::HttpFileResource()
     this->m_typeHash.insert("htm", "text/html");
     this->m_typeHash.insert("jpg", "image/jpeg");
     this->m_typeHash.insert("png", "image/png");
+    //this->m_typeHash.insert("mkv", "video/x-matroska");
+    this->m_typeHash.insert("mkv", "video/mp4");
 }
 
 HttpFileResource::~HttpFileResource()

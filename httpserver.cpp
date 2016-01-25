@@ -206,7 +206,7 @@ void HttpServer::handlePacket()
                                   "Connection: keep-alive\r\n"
                                   "\r\n")
                           .arg(data->resource->contentType())
-                          .arg(data->resource->size())
+                          .arg(data->len)
                           .arg(data->resource->pos())
                           .arg(data->resource->pos() + data->len - 1)
                           .arg(data->resource->size()).toUtf8());
