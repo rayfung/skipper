@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = skipper
 TEMPLATE = app
 
-DEFINES += DEBUG_SKIPPER
+CONFIG(debug, debug|release): DEFINES += DEBUG_SKIPPER
 
 SOURCES += main.cpp\
         mainwindow.cpp \
