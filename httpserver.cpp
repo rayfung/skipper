@@ -151,6 +151,8 @@ void HttpServer::handlePacket()
             return;
         }
 
+        sk_log(data->logPrefix, QString::fromUtf8(data->requestData));
+
         int code = 403;
 
         if(parseHeader(data->requestData, &data->requestHeader) && data->requestHeader["method"] == "get")
@@ -184,32 +186,53 @@ void HttpServer::handlePacket()
             }
         }
 
+        sk_log(data->logPrefix, QString("code = %1").arg(code));
+
+        data->keepAlive = false;
+
+        if(data->requestHeader.contains("http_connection") && data->requestHeader["http_connection"].trimmed().toLower() == "keep-alive")
+            data->keepAlive = true;
+
+        sk_log(data->logPrefix, QString("KeepAlive = %1").arg(data->keepAlive));
+
         if(code == 200)
         {
             data->state = HTTP_SENDING_RESPONSE;
-            client->write(QString("HTTP/1.1 200 OK\r\n"
-                                  "Content-Type: %1\r\n"
-                                  "Content-Length: %2\r\n"
-                                  "Accept-Ranges: bytes\r\n"
-                                  "Connection: keep-alive\r\n"
-                                  "\r\n")
-                          .arg(data->resource->contentType())
-                          .arg(data->resource->size()).toUtf8());
+
+            QString response = QString("HTTP/1.1 200 OK\r\n" "Accept-Ranges: bytes\r\n");
+            QString contentType = data->resource->contentType();
+
+            if(contentType.isEmpty() == false)
+                response.append(QString("Content-Type: %1\r\n").arg(contentType));
+
+            response.append(QString("Content-Length: %1\r\n").arg(data->len));
+            response.append(data->keepAlive ? "Connection: keep-alive\r\n" : "Connection: close\r\n");
+
+            response.append(QString("\r\n"));
+
+            sk_log(data->logPrefix, QString("response = %1").arg(response));
+
+            client->write(response.toUtf8());
         }
         else if(code == 206)
         {
             data->state = HTTP_SENDING_RESPONSE;
-            client->write(QString("HTTP/1.1 206 Partial Content\r\n"
-                                  "Content-Type: %1\r\n"
-                                  "Content-Length: %2\r\n"
-                                  "Content-Range: bytes %3-%4/%5\r\n"
-                                  "Connection: keep-alive\r\n"
-                                  "\r\n")
-                          .arg(data->resource->contentType())
-                          .arg(data->len)
-                          .arg(data->resource->pos())
-                          .arg(data->resource->pos() + data->len - 1)
-                          .arg(data->resource->size()).toUtf8());
+
+            QString response = QString("HTTP/1.1 206 Partial Content\r\n");
+            QString contentType = data->resource->contentType();
+
+            if(contentType.isEmpty() == false)
+                response.append(QString("Content-Type: %1\r\n").arg(contentType));
+
+            response.append(QString("Content-Length: %1\r\n").arg(data->len));
+            response.append(data->keepAlive ? "Connection: keep-alive\r\n" : "Connection: close\r\n");
+
+            qint64 pos = data->resource->pos();
+            response.append(QString("Content-Range: bytes %1-%2/%3\r\n").arg(pos).arg(pos + data->len - 1).arg(data->resource->size()));
+
+            response.append(QString("\r\n"));
+
+            client->write(response.toUtf8());
         }
         else if(code == 416)
         {
@@ -414,11 +437,19 @@ void HttpServer::clientBytesWritten(qint64 len)
 
     if(data->len <= 0)
     {
-        data->state = HTTP_READING_HEADER;
+        if(data->keepAlive)
+        {
+            data->state = HTTP_READING_HEADER;
+        }
+        else
+        {
+            data->state = HTTP_INVALID;
+            client->close();
+        }
+
         data->requestData.clear();
         data->requestHeader.clear();
         data->resource->close();
-        return;
     }
 }
 

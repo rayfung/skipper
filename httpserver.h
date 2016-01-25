@@ -43,6 +43,7 @@ typedef struct
     QHash<QString, QString> requestHeader;
     qint64 len;
     HttpResource *resource;
+    bool keepAlive;
 
 #ifdef DEBUG_SKIPPER
     QString logPrefix;
