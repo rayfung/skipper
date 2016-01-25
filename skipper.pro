@@ -4,17 +4,22 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = skipper
 TEMPLATE = app
 
+DEFINES += DEBUG_SKIPPER
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    httpserver.cpp \
+    httpfileresource.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    httpserver.h \
+    httpfileresource.h
 
 FORMS    += mainwindow.ui
