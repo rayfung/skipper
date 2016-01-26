@@ -70,7 +70,7 @@ QString HttpFileResource::contentType()
     int index = fileExt.lastIndexOf(".");
 
     if(index < 0)
-        return "application/octet-stream";
+        return QString();
 
     fileExt = fileExt.mid(index + 1);
 
@@ -78,5 +78,4 @@ QString HttpFileResource::contentType()
         return this->m_typeHash[fileExt];
 
     return QString();
-    //return "application/octet-stream";
 }
