@@ -1,5 +1,6 @@
 #include <QUrl>
 #include <QStringList>
+#include <QDateTime>
 #include "httpserver.h"
 
 HttpResource::HttpResource()
@@ -81,7 +82,7 @@ void HttpServer::newConnection()
         httpData->resource = NULL;
 
 #ifdef DEBUG_SKIPPER
-    httpData->logPrefix = client->peerAddress().toString() + " : " + QString::number(client->peerPort());
+    httpData->logPrefix = client->peerAddress().toString() + ":" + QString::number(client->peerPort());
     sk_log(httpData->logPrefix, "Connected");
 #endif
 
@@ -98,7 +99,7 @@ void HttpServer::removeConnection(QTcpSocket *client)
     {
         HttpData *data = this->m_Hash.take(client);
 
-        sk_log(data->logPrefix, "bye!");
+        sk_log(data->logPrefix, "Bye!");
 
         data->client = NULL;
         data->requestData.clear();
@@ -151,12 +152,18 @@ void HttpServer::handlePacket()
             return;
         }
 
-        sk_log(data->logPrefix, QString::fromUtf8(data->requestData));
-
         int code = 403;
+
+#ifdef DEBUG_SKIPPER
+        QString logMsg = "Unknown";
+#endif
 
         if(parseHeader(data->requestData, &data->requestHeader) && data->requestHeader["method"] == "get")
         {
+#ifdef DEBUG_SKIPPER
+            logMsg = QString("GET ") + data->requestHeader["path"];
+#endif
+
             if(data->resource)
             {
                 if(data->resource->open(this->m_root + "/" + data->requestHeader["path"]))
@@ -186,14 +193,39 @@ void HttpServer::handlePacket()
             }
         }
 
-        sk_log(data->logPrefix, QString("code = %1").arg(code));
-
         data->keepAlive = false;
 
         if(data->requestHeader.contains("http_connection") && data->requestHeader["http_connection"].trimmed().toLower() == "keep-alive")
             data->keepAlive = true;
 
-        sk_log(data->logPrefix, QString("KeepAlive = %1").arg(data->keepAlive));
+#ifdef DEBUG_SKIPPER
+        logMsg.append(QString(" -> %1 ").arg(code));
+
+        switch (code)
+        {
+        case 200:
+            logMsg.append("OK");
+            break;
+
+        case 206:
+            logMsg.append("Partial content");
+            break;
+
+        case 416:
+            logMsg.append("Requested range not satisfiable");
+            break;
+
+        case 403:
+            logMsg.append("Forbidden");
+            break;
+
+        default:
+            logMsg.append("Internal Server Error");
+            break;
+        }
+
+        sk_log(data->logPrefix, logMsg);
+#endif
 
         if(code == 200)
         {
@@ -209,8 +241,6 @@ void HttpServer::handlePacket()
             response.append(data->keepAlive ? "Connection: keep-alive\r\n" : "Connection: close\r\n");
 
             response.append(QString("\r\n"));
-
-            sk_log(data->logPrefix, QString("response = %1").arg(response));
 
             client->write(response.toUtf8());
         }
@@ -455,12 +485,13 @@ void HttpServer::clientBytesWritten(qint64 len)
 
 void HttpServer::_printLog(const QString &id, const QString &msg)
 {
-    qDebug("(%s) %s", id.toUtf8().constData(), msg.toUtf8().constData());
+    QDateTime dt = QDateTime::currentDateTime();
+    qDebug("%s - [%s] %s", id.toUtf8().constData(), dt.toString(Qt::RFC2822Date).toUtf8().constData(), msg.toUtf8().constData());
 }
 
 void HttpServer::_printLog(QTcpSocket *client, const QString &msg)
 {
-    QString id = client->peerAddress().toString() + " : " + QString::number(client->peerPort());
+    QString id = client->peerAddress().toString() + ":" + QString::number(client->peerPort());
 
     _printLog(id, msg);
 }
