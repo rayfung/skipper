@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "httpfileresource.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -9,11 +10,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->server = new HttpServer(this);
-    this->server->start("127.0.0.1", 80, "D:/www/", new HttpFileResourceFactory());
 }
 
 MainWindow::~MainWindow()
 {
     delete this->server;
     delete ui;
+}
+
+void MainWindow::on_pushButtonStartServer_clicked()
+{
+    bool ok = this->server->start("127.0.0.1", 80, "D:/www/", new HttpFileResourceFactory());
+
+    if(!ok)
+    {
+        QMessageBox::critical(this, QString("Skipper"), QString("Failed to start server!"));
+    }
 }
