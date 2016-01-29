@@ -32,6 +32,7 @@ const qint64 HttpServer::s_writeBufferLimit = 10L * 1024L * 1024L;
 HttpServer::HttpServer(QObject *parent) : QObject(parent)
 {
     this->m_server = new QTcpServer(this);
+    this->m_factory = NULL;
 
     connect(this->m_server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 }
@@ -40,7 +41,8 @@ HttpServer::~HttpServer()
 {
     stop();
 
-    delete this->m_factory;
+    if(this->m_factory)
+        delete this->m_factory;
     this->m_factory = NULL;
 }
 
