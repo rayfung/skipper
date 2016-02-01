@@ -1,3 +1,4 @@
+#include <QFileInfo>
 #include "httpfileresource.h"
 
 HttpFileResourceFactory::HttpFileResourceFactory()
@@ -34,7 +35,12 @@ HttpFileResource::~HttpFileResource()
 
 bool HttpFileResource::open(const QString &path)
 {
-    this->m_file.setFileName(path);
+    QString finalPath = path;
+
+    if(QFileInfo(finalPath).isDir())
+        finalPath += QString("/index.html");
+
+    this->m_file.setFileName(finalPath);
     return this->m_file.open(QFile::ReadOnly);
 }
 
