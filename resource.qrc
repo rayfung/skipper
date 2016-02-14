@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/file_01.ico</file>
+        <file>icons/file_02.ico</file>
+        <file>icons/file_03.ico</file>
+        <file>icons/file_04.ico</file>
+        <file>icons/file_05.ico</file>
+        <file>icons/file_06.ico</file>
+        <file>icons/file_07.ico</file>
+        <file>icons/image_01.ico</file>
+        <file>icons/image_02.ico</file>
+        <file>icons/image_03.ico</file>
+        <file>icons/image_04.ico</file>
+        <file>icons/image_05.ico</file>
+        <file>icons/image_06.ico</file>
+        <file>icons/image_07.ico</file>
+        <file>icons/video_01.ico</file>
+        <file>icons/video_02.ico</file>
+        <file>icons/video_03.ico</file>
+        <file>icons/video_04.ico</file>
+        <file>icons/video_05.ico</file>
+        <file>icons/video_06.ico</file>
+        <file>icons/video_07.ico</file>
+    </qresource>
+</RCC>

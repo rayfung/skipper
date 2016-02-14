@@ -16,10 +16,15 @@ CONFIG(debug, debug|release): DEFINES += DEBUG_SKIPPER
 SOURCES += main.cpp\
         mainwindow.cpp \
     httpserver.cpp \
-    httpfileresource.cpp
+    httpfileresource.cpp \
+    skipperfilesystemmodel.cpp
 
 HEADERS  += mainwindow.h \
     httpserver.h \
-    httpfileresource.h
+    httpfileresource.h \
+    skipperfilesystemmodel.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    resource.qrc
