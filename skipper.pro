@@ -17,12 +17,18 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     httpserver.cpp \
     httpfileresource.cpp \
-    skipperfilesystemmodel.cpp
+    skipperfilesystemmodel.cpp \
+    tea.cpp \
+    countermode.cpp \
+    baseblockcipher.cpp
 
 HEADERS  += mainwindow.h \
     httpserver.h \
     httpfileresource.h \
-    skipperfilesystemmodel.h
+    skipperfilesystemmodel.h \
+    tea.h \
+    countermode.h \
+    baseblockcipher.h
 
 FORMS    += mainwindow.ui
 

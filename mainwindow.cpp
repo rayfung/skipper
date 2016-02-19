@@ -2,6 +2,10 @@
 #include "ui_mainwindow.h"
 #include "httpfileresource.h"
 #include <QMessageBox>
+#include "tea.h"
+#include "countermode.h"
+#include <QtDebug>
+#include <QCryptographicHash>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +14,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->server = new HttpServer(this);
+
+    TEA tea;
+    tea.setKey(QCryptographicHash::hash("TEA", QCryptographicHash::Md5));
+
+    QByteArray plainText = QByteArray("Skipper!");
+    QByteArray encrypted = tea.encryptBlock(plainText);
+    QByteArray decrypted = tea.decryptBlock(encrypted);
+
+    qDebug() << plainText.size() << plainText.toHex();
+    qDebug() << encrypted.size() << encrypted.toHex();
+    qDebug() << decrypted.size() << decrypted.toHex();
 }
 
 MainWindow::~MainWindow()
