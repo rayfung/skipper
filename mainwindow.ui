@@ -37,20 +37,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonEncryptFile">
-        <property name="text">
-         <string>Encrypt File</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonDecryptFile">
-        <property name="text">
-         <string>Decrypt File</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>

@@ -18,8 +18,6 @@ public:
 
 private slots:
     void on_pushButtonStartServer_clicked();
-    void on_pushButtonEncryptFile_clicked();
-    void on_pushButtonDecryptFile_clicked();
 
 private:
     Ui::MainWindow *ui;
