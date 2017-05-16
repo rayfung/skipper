@@ -17,18 +17,26 @@ public:
     virtual bool seek(qint64 pos);
     virtual QByteArray read(qint64 maxSize);
     virtual QString contentType();
+    void setRootPath(const QString &root);
 
 private:
     QFile m_file;
     QHash<QString, QString> m_typeHash;
+    QString m_root;
 };
 
 class HttpFileResourceFactory : public HttpResourceFactory
 {
 public:
-    HttpFileResourceFactory();
+    HttpFileResourceFactory(const QString &root);
     virtual ~HttpFileResourceFactory();
     virtual HttpResource *createResource();
+
+private:
+    HttpFileResourceFactory();
+
+private:
+    QString m_root;
 };
 
 #endif // HTTPFILERESOURCE_H

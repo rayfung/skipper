@@ -1,8 +1,9 @@
 #include <QFileInfo>
 #include "httpfileresource.h"
 
-HttpFileResourceFactory::HttpFileResourceFactory()
+HttpFileResourceFactory::HttpFileResourceFactory(const QString &root)
 {
+    m_root = root;
 }
 
 HttpFileResourceFactory::~HttpFileResourceFactory()
@@ -11,7 +12,10 @@ HttpFileResourceFactory::~HttpFileResourceFactory()
 
 HttpResource *HttpFileResourceFactory::createResource()
 {
-    return new HttpFileResource();
+    HttpFileResource *res = new HttpFileResource();
+
+    res->setRootPath(m_root);
+    return res;
 }
 
 
@@ -33,9 +37,14 @@ HttpFileResource::~HttpFileResource()
     this->close();
 }
 
+void HttpFileResource::setRootPath(const QString &root)
+{
+    m_root = root;
+}
+
 bool HttpFileResource::open(const QString &path)
 {
-    QString finalPath = path;
+    QString finalPath = m_root + "/" + path;
 
     if(QFileInfo(finalPath).isDir())
         finalPath += QString("/index.html");

@@ -57,7 +57,7 @@ class HttpServer : public QObject
 public:
     explicit HttpServer(QObject *parent = 0);
     ~HttpServer();
-    bool start(const QString &bindAddress, quint16 bindPort, const QString &root, HttpResourceFactory *factory = NULL);
+    bool start(const QString &bindAddress, quint16 bindPort, HttpResourceFactory *factory = NULL);
     void stop();
 
 private:
@@ -79,7 +79,6 @@ private slots:
 private:
     QTcpServer *m_server;
     QHash<QTcpSocket *, HttpData *> m_Hash;
-    QString m_root;
     HttpResourceFactory *m_factory;
 
 private:

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QStringList>
 #include "httpserver.h"
 
 namespace Ui {
@@ -18,6 +19,17 @@ public:
 
 private slots:
     void on_pushButtonStartServer_clicked();
+
+    void on_pushButtonStopServer_clicked();
+
+    void on_pushButtonSelectPath_clicked();
+
+    void on_pushButtonRefreshIPList_clicked();
+
+private:
+    void enableInputUI(bool val);
+    QStringList getAllIP();
+    void updateIPList();
 
 private:
     Ui::MainWindow *ui;

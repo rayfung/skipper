@@ -46,9 +46,8 @@ HttpServer::~HttpServer()
     this->m_factory = NULL;
 }
 
-bool HttpServer::start(const QString &bindAddress, quint16 bindPort, const QString &root, HttpResourceFactory *factory)
+bool HttpServer::start(const QString &bindAddress, quint16 bindPort, HttpResourceFactory *factory)
 {
-    this->m_root = root;
     this->m_factory = factory;
     return this->m_server->listen(QHostAddress(bindAddress), bindPort);
 }
@@ -168,7 +167,7 @@ void HttpServer::handlePacket()
 
             if(data->resource)
             {
-                if(data->resource->open(this->m_root + "/" + data->requestHeader["path"]))
+                if(data->resource->open(data->requestHeader["path"]))
                 {
                     if(data->requestHeader.contains("http_range"))
                     {
