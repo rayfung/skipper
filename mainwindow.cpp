@@ -4,12 +4,30 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QNetworkInterface>
+#include <QCryptographicHash>
+#include <QDateTime>
+#include <QUrl>
+#include <QClipboard>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    fsModel = new QFileSystemModel();
+
+    ui->treeViewFileSystem->setModel(fsModel);
+
+    int count = fsModel->columnCount();
+    for(int i = 1; i < count; ++i)
+    {
+        ui->treeViewFileSystem->hideColumn(i);
+    }
+
+    connect(ui->comboBoxIP, SIGNAL(currentTextChanged(QString)), this, SLOT(updatePathPrefixPreview()));
+    connect(ui->spinBoxPort, SIGNAL(valueChanged(int)), this, SLOT(updatePathPrefixPreview()));
+    connect(ui->lineEditPathPrefix, SIGNAL(textChanged(QString)), this, SLOT(updatePathPrefixPreview()));
 
     this->server = new HttpServer(this);
     enableInputUI(true);
@@ -19,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete this->server;
+    delete fsModel;
     delete ui;
 }
 
@@ -27,6 +46,7 @@ void MainWindow::enableInputUI(bool val)
     ui->widgetTop->setEnabled(val);
     ui->pushButtonStartServer->setEnabled(val);
     ui->pushButtonStopServer->setEnabled(!val);
+    ui->pushButtonCopyURL->setEnabled(!val);
 }
 
 QStringList MainWindow::getAllIP()
@@ -87,6 +107,8 @@ void MainWindow::on_pushButtonStartServer_clicked()
     if(ok)
     {
         enableInputUI(false);
+        fsModel->setRootPath(rootPath);
+        ui->treeViewFileSystem->setRootIndex(fsModel->index(rootPath));
     }
     else
     {
@@ -114,4 +136,58 @@ void MainWindow::on_pushButtonSelectPath_clicked()
 void MainWindow::on_pushButtonRefreshIPList_clicked()
 {
     updateIPList();
+}
+
+void MainWindow::on_pushButtonGeneratePathPrefix_clicked()
+{
+    QByteArray data = QString::number(QDateTime::currentMSecsSinceEpoch()).toUtf8();
+
+    data = QCryptographicHash::hash(data, QCryptographicHash::Md5);
+    ui->lineEditPathPrefix->setText(data.toHex());
+}
+
+QString MainWindow::getUrlPrefix()
+{
+    QString url = "http://";
+
+    url += ui->comboBoxIP->currentText();
+    if(ui->spinBoxPort->value() != 80)
+        url += ":" + QString::number(ui->spinBoxPort->value());
+    url += "/" + ui->lineEditPathPrefix->text();
+
+    return url;
+}
+
+void MainWindow::updatePathPrefixPreview()
+{
+    ui->labelPathPreview->setText(getUrlPrefix());
+}
+
+void MainWindow::on_pushButtonCopyURL_clicked()
+{
+    QModelIndex index = ui->treeViewFileSystem->currentIndex();
+    QModelIndex rootIndex = fsModel->index(fsModel->rootPath());
+
+    if(index.isValid() && ui->treeViewFileSystem->selectionModel()->isSelected(index))
+    {
+        QStringList list;
+
+        while(index.isValid() && index != rootIndex)
+        {
+            list.append(fsModel->fileName(index));
+            index = index.parent();
+        }
+
+        QString url = getUrlPrefix();
+
+        if(url.endsWith('/'))
+            url.chop(1);
+
+        for(int i = list.length() - 1; i >= 0; i--)
+        {
+            url += "/" + QUrl::toPercentEncoding(list.at(i));
+        }
+
+        QApplication::clipboard()->setText(url);
+    }
 }

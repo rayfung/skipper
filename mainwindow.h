@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStringList>
+#include <QFileSystemModel>
 #include "httpserver.h"
 
 namespace Ui {
@@ -17,6 +18,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void updatePathPrefixPreview();
+
 private slots:
     void on_pushButtonStartServer_clicked();
 
@@ -26,14 +30,20 @@ private slots:
 
     void on_pushButtonRefreshIPList_clicked();
 
+    void on_pushButtonGeneratePathPrefix_clicked();
+
+    void on_pushButtonCopyURL_clicked();
+
 private:
     void enableInputUI(bool val);
     QStringList getAllIP();
     void updateIPList();
+    QString getUrlPrefix();
 
 private:
     Ui::MainWindow *ui;
     HttpServer *server;
+    QFileSystemModel *fsModel;
 };
 
 #endif // MAINWINDOW_H
