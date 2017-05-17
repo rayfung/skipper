@@ -60,8 +60,12 @@ void HttpServer::stop()
 
     for(int i = 0; i < kl.length(); ++i)
     {
-        removeConnection(kl.at(i));
-        kl.at(i)->deleteLater();
+        QTcpSocket *client = kl.at(i);
+
+        disconnect(client, 0, 0, 0);
+        removeConnection(client);
+        client->abort();
+        client->deleteLater();
     }
 
     this->m_Hash.clear();
