@@ -18,17 +18,19 @@ public:
     virtual QByteArray read(qint64 maxSize);
     virtual QString contentType();
     void setRootPath(const QString &root);
+    void setPrefix(const QString &prefix);
 
 private:
     QFile m_file;
     QHash<QString, QString> m_typeHash;
     QString m_root;
+    QString m_prefix;
 };
 
 class HttpFileResourceFactory : public HttpResourceFactory
 {
 public:
-    HttpFileResourceFactory(const QString &root);
+    HttpFileResourceFactory(const QString &root, const QString &prefix);
     virtual ~HttpFileResourceFactory();
     virtual HttpResource *createResource();
 
@@ -37,6 +39,7 @@ private:
 
 private:
     QString m_root;
+    QString m_prefix;
 };
 
 #endif // HTTPFILERESOURCE_H

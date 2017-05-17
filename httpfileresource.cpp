@@ -1,9 +1,10 @@
 #include <QFileInfo>
 #include "httpfileresource.h"
 
-HttpFileResourceFactory::HttpFileResourceFactory(const QString &root)
+HttpFileResourceFactory::HttpFileResourceFactory(const QString &root, const QString &prefix)
 {
     m_root = root;
+    m_prefix = prefix;
 }
 
 HttpFileResourceFactory::~HttpFileResourceFactory()
@@ -15,6 +16,7 @@ HttpResource *HttpFileResourceFactory::createResource()
     HttpFileResource *res = new HttpFileResource();
 
     res->setRootPath(m_root);
+    res->setPrefix(m_prefix);
     return res;
 }
 
@@ -42,9 +44,41 @@ void HttpFileResource::setRootPath(const QString &root)
     m_root = root;
 }
 
+void HttpFileResource::setPrefix(const QString &prefix)
+{
+    m_prefix = prefix;
+}
+
 bool HttpFileResource::open(const QString &path)
 {
-    QString finalPath = m_root + "/" + path;
+    QString tmpPath = path;
+
+    if(!m_prefix.isEmpty())
+    {
+        if(tmpPath.startsWith('/'))
+            tmpPath = tmpPath.mid(1);
+
+        bool ok = false;
+        int cnt = m_prefix.length();
+        if(tmpPath.startsWith(m_prefix))
+        {
+            if(tmpPath.length() == cnt)
+            {
+                ok = true;
+                tmpPath.clear();
+            }
+            else if(tmpPath.length() > cnt && tmpPath.at(cnt) == '/')
+            {
+                ok = true;
+                tmpPath = tmpPath.mid(cnt + 1);
+            }
+        }
+
+        if(!ok)
+            return false;
+    }
+
+    QString finalPath = m_root + "/" + tmpPath;
 
     if(QFileInfo(finalPath).isDir())
         finalPath += QString("/index.html");

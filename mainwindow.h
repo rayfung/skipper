@@ -38,6 +38,7 @@ private:
     void enableInputUI(bool val);
     QStringList getAllIP();
     void updateIPList();
+    QString getPathPrefix();
     QString getUrlPrefix();
 
 private:

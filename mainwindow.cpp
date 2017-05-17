@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->comboBoxIP, SIGNAL(currentTextChanged(QString)), this, SLOT(updatePathPrefixPreview()));
     connect(ui->spinBoxPort, SIGNAL(valueChanged(int)), this, SLOT(updatePathPrefixPreview()));
     connect(ui->lineEditPathPrefix, SIGNAL(textChanged(QString)), this, SLOT(updatePathPrefixPreview()));
+    connect(ui->groupBoxPathMapping, SIGNAL(toggled(bool)), this, SLOT(updatePathPrefixPreview()));
 
     this->server = new HttpServer(this);
     enableInputUI(true);
@@ -102,7 +103,8 @@ void MainWindow::on_pushButtonStartServer_clicked()
         return;
     }
 
-    bool ok = this->server->start(ipAddress, port, new HttpFileResourceFactory(rootPath));
+    QString prefix = getPathPrefix();
+    bool ok = this->server->start(ipAddress, port, new HttpFileResourceFactory(rootPath, prefix));
 
     if(ok)
     {
@@ -146,6 +148,11 @@ void MainWindow::on_pushButtonGeneratePathPrefix_clicked()
     ui->lineEditPathPrefix->setText(data.toHex());
 }
 
+QString MainWindow::getPathPrefix()
+{
+    return ui->groupBoxPathMapping->isChecked() ? ui->lineEditPathPrefix->text() : QString();
+}
+
 QString MainWindow::getUrlPrefix()
 {
     QString url = "http://";
@@ -153,7 +160,7 @@ QString MainWindow::getUrlPrefix()
     url += ui->comboBoxIP->currentText();
     if(ui->spinBoxPort->value() != 80)
         url += ":" + QString::number(ui->spinBoxPort->value());
-    url += "/" + ui->lineEditPathPrefix->text();
+    url += "/" + getPathPrefix();
 
     return url;
 }
