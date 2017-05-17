@@ -8,12 +8,18 @@
 #include <QDateTime>
 #include <QUrl>
 #include <QClipboard>
+#include <QRegExpValidator>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QRegExp re("^[^/\\\\]*$");
+    QRegExpValidator *prefixValidator = new QRegExpValidator(re, this);
+
+    ui->lineEditPathPrefix->setValidator(prefixValidator);
 
     fsModel = new QFileSystemModel();
 
@@ -160,7 +166,7 @@ QString MainWindow::getUrlPrefix()
     url += ui->comboBoxIP->currentText();
     if(ui->spinBoxPort->value() != 80)
         url += ":" + QString::number(ui->spinBoxPort->value());
-    url += "/" + getPathPrefix();
+    url += "/" + QUrl::toPercentEncoding(getPathPrefix());
 
     return url;
 }
