@@ -17,7 +17,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     httpserver.cpp \
     httpfileresource.cpp \
-    skipperfilesystemmodel.cpp \
     tea.cpp \
     countermode.cpp \
     baseblockcipher.cpp
@@ -25,12 +24,10 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     httpserver.h \
     httpfileresource.h \
-    skipperfilesystemmodel.h \
     tea.h \
     countermode.h \
     baseblockcipher.h
 
 FORMS    += mainwindow.ui
 
-RESOURCES += \
-    resource.qrc
+RESOURCES +=
