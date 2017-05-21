@@ -16,17 +16,11 @@ CONFIG(debug, debug|release): DEFINES += DEBUG_SKIPPER
 SOURCES += main.cpp\
         mainwindow.cpp \
     httpserver.cpp \
-    httpfileresource.cpp \
-    tea.cpp \
-    countermode.cpp \
-    baseblockcipher.cpp
+    httpfileresource.cpp
 
 HEADERS  += mainwindow.h \
     httpserver.h \
-    httpfileresource.h \
-    tea.h \
-    countermode.h \
-    baseblockcipher.h
+    httpfileresource.h
 
 FORMS    += mainwindow.ui
 
