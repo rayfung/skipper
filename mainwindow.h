@@ -40,6 +40,8 @@ private:
     void updateIPList();
     QString getPathPrefix();
     QString getUrlPrefix();
+    void loadSettings();
+    void saveSettings();
 
 private:
     Ui::MainWindow *ui;

@@ -9,6 +9,7 @@
 #include <QUrl>
 #include <QClipboard>
 #include <QRegExpValidator>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->server = new HttpServer(this);
     enableInputUI(true);
     updateIPList();
+    loadSettings();
 }
 
 MainWindow::~MainWindow()
@@ -46,6 +48,28 @@ MainWindow::~MainWindow()
     delete this->server;
     delete fsModel;
     delete ui;
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings settings("Ray Fung", "Skipper");
+
+    ui->lineEditPath->setText(settings.value("root_path", QString()).toString());
+    ui->comboBoxIP->setCurrentText(settings.value("ip", QString()).toString());
+    ui->spinBoxPort->setValue(settings.value("port", 80).toInt());
+    ui->groupBoxPathMapping->setChecked(settings.value("enable_mapping", false).toBool());
+    ui->lineEditPathPrefix->setText(settings.value("path_prefix", QString()).toString());
+}
+
+void MainWindow::saveSettings()
+{
+    QSettings settings("Ray Fung", "Skipper");
+
+    settings.setValue("root_path", ui->lineEditPath->text());
+    settings.setValue("ip", ui->comboBoxIP->currentText());
+    settings.setValue("port", ui->spinBoxPort->value());
+    settings.setValue("enable_mapping", ui->groupBoxPathMapping->isChecked());
+    settings.setValue("path_prefix", ui->lineEditPathPrefix->text());
 }
 
 void MainWindow::enableInputUI(bool val)
@@ -114,6 +138,7 @@ void MainWindow::on_pushButtonStartServer_clicked()
 
     if(ok)
     {
+        saveSettings();
         enableInputUI(false);
         fsModel->setRootPath(rootPath);
         ui->treeViewFileSystem->setRootIndex(fsModel->index(rootPath));
