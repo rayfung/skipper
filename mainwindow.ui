@@ -249,8 +249,15 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
+  <tabstop>lineEditPath</tabstop>
+  <tabstop>pushButtonSelectPath</tabstop>
+  <tabstop>comboBoxIP</tabstop>
+  <tabstop>pushButtonRefreshIPList</tabstop>
+  <tabstop>spinBoxPort</tabstop>
+  <tabstop>groupBoxPathMapping</tabstop>
   <tabstop>lineEditPathPrefix</tabstop>
   <tabstop>pushButtonGeneratePathPrefix</tabstop>
+  <tabstop>treeViewFileSystem</tabstop>
   <tabstop>pushButtonStartServer</tabstop>
   <tabstop>pushButtonStopServer</tabstop>
   <tabstop>pushButtonCopyURL</tabstop>
