@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QStringList>
 #include <QFileSystemModel>
+#include <QSystemTrayIcon>
 #include "httpserver.h"
 
 namespace Ui {
@@ -34,6 +35,11 @@ private slots:
 
     void on_pushButtonCopyURL_clicked();
 
+    void systemTrayIconClicked(QSystemTrayIcon::ActivationReason reason);
+
+protected:
+    void closeEvent(QCloseEvent *);
+
 private:
     void enableInputUI(bool val);
     QStringList getAllIP();
@@ -42,11 +48,13 @@ private:
     QString getUrlPrefix();
     void loadSettings();
     void saveSettings();
+    void createTrayIcon();
 
 private:
     Ui::MainWindow *ui;
     HttpServer *server;
     QFileSystemModel *fsModel;
+    QSystemTrayIcon *trayIcon;
 };
 
 #endif // MAINWINDOW_H

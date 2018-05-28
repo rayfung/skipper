@@ -10,6 +10,9 @@
 #include <QClipboard>
 #include <QRegExpValidator>
 #include <QSettings>
+#include <QFileIconProvider>
+#include <QCloseEvent>
+#include <QMenu>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -41,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
     enableInputUI(true);
     updateIPList();
     loadSettings();
+
+    createTrayIcon();
 }
 
 MainWindow::~MainWindow()
@@ -48,6 +53,55 @@ MainWindow::~MainWindow()
     delete this->server;
     delete fsModel;
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+    int btn = QMessageBox::question(this, "关闭提示", "你要彻底关闭程序还是隐藏到系统托盘？", "关闭", "隐藏", "取消");
+
+    if(btn == 0)
+    {
+        e->accept();
+    }
+    else if(btn == 1)
+    {
+        e->ignore();
+        this->hide();
+    }
+    else
+    {
+        e->ignore();
+    }
+}
+
+void MainWindow::createTrayIcon()
+{
+    QAction *showAction = new QAction("显示主窗口", this);
+    QAction *quitAction = new QAction("退出程序", this);
+
+    QMenu *trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(showAction);
+    trayIconMenu->addAction(quitAction);
+
+    connect(showAction, SIGNAL(triggered(bool)), this, SLOT(showNormal()));
+    connect(quitAction, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
+
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setIcon(QFileIconProvider().icon(QFileIconProvider::Network));
+
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(systemTrayIconClicked(QSystemTrayIcon::ActivationReason)));
+
+    trayIcon->show();
+}
+
+void MainWindow::systemTrayIconClicked(QSystemTrayIcon::ActivationReason reason)
+{
+    if(reason == QSystemTrayIcon::Trigger)
+    {
+        this->showNormal();
+    }
 }
 
 void MainWindow::loadSettings()
