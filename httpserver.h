@@ -23,7 +23,7 @@ public:
     virtual qint64 size()=0;
     virtual qint64 pos()=0;
     virtual bool seek(qint64 pos)=0;
-    virtual QByteArray read(qint64 maxSize)=0;
+    virtual qint64 read(char *data, qint64 maxSize)=0;
     virtual QString contentType()=0;
 };
 
@@ -44,6 +44,7 @@ typedef struct
     qint64 len;
     HttpResource *resource;
     bool keepAlive;
+    char *buffer;
 
 #ifdef DEBUG_SKIPPER
     QString logPrefix;
@@ -83,6 +84,7 @@ private:
 
 private:
     static const qint64 s_writeBufferLimit;
+    static const int s_connectionBufferSize;
 };
 
 #endif // HTTPSERVER_H

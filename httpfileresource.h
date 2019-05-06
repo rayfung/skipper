@@ -15,7 +15,7 @@ public:
     virtual qint64 size();
     virtual qint64 pos();
     virtual bool seek(qint64 pos);
-    virtual QByteArray read(qint64 maxSize);
+    virtual qint64 read(char *data, qint64 maxSize);
     virtual QString contentType();
     void setRootPath(const QString &root);
     void setPrefix(const QString &prefix);

@@ -28,6 +28,7 @@ HttpResourceFactory::~HttpResourceFactory()
 
 //发送缓冲区最大容量为 10 MiB
 const qint64 HttpServer::s_writeBufferLimit = 10L * 1024L * 1024L;
+const int HttpServer::s_connectionBufferSize = 64 * 1024;
 
 HttpServer::HttpServer(QObject *parent) : QObject(parent)
 {
@@ -86,6 +87,8 @@ void HttpServer::newConnection()
     else
         httpData->resource = NULL;
 
+    httpData->buffer = new char[HttpServer::s_connectionBufferSize];
+
 #ifdef DEBUG_SKIPPER
     httpData->logPrefix = client->peerAddress().toString() + ":" + QString::number(client->peerPort());
     sk_log(httpData->logPrefix, "Connected");
@@ -112,6 +115,12 @@ void HttpServer::removeConnection(QTcpSocket *client)
         if(data->resource)
             delete data->resource;
         data->resource = NULL;
+
+        if (data->buffer)
+        {
+            delete[] data->buffer;
+        }
+        data->buffer = NULL;
 
         delete data;
     }
@@ -456,19 +465,21 @@ void HttpServer::clientBytesWritten(qint64 len)
 
     qint64 count = data->len;
 
-    if(count > 4096)
-        count = 4096;
+    if (count > HttpServer::s_connectionBufferSize)
+    {
+        count = HttpServer::s_connectionBufferSize;
+    }
 
-    QByteArray t = data->resource->read(count);
+    count = data->resource->read(data->buffer, count);
 
-    if(client->write(t) < 0)
+    if (count < 0 || client->write(data->buffer, count) < 0)
     {
         data->state = HTTP_INVALID;
         client->abort();
         return;
     }
 
-    data->len -= t.size();
+    data->len -= count;
 
     if(data->len <= 0)
     {

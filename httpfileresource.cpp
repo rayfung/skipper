@@ -107,9 +107,9 @@ bool HttpFileResource::seek(qint64 pos)
     return this->m_file.seek(pos);
 }
 
-QByteArray HttpFileResource::read(qint64 maxSize)
+qint64 HttpFileResource::read(char *data, qint64 maxSize)
 {
-    return this->m_file.read(maxSize);
+    return this->m_file.read(data, maxSize);
 }
 
 QString HttpFileResource::contentType()
