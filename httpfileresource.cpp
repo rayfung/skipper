@@ -32,6 +32,8 @@ HttpFileResource::HttpFileResource()
     //this->m_typeHash.insert("mkv", "video/x-matroska");
     this->m_typeHash.insert("mp4", "video/mp4");
     this->m_typeHash.insert("ico", "image/x-icon");
+    this->m_typeHash.insert("css", "text/css");
+    this->m_typeHash.insert("js", "application/javascript");
 
     this->m_defaultMime = "application/octet-stream";
 }
