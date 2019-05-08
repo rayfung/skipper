@@ -32,6 +32,8 @@ HttpFileResource::HttpFileResource()
     //this->m_typeHash.insert("mkv", "video/x-matroska");
     this->m_typeHash.insert("mp4", "video/mp4");
     this->m_typeHash.insert("ico", "image/x-icon");
+
+    this->m_defaultMime = "application/octet-stream";
 }
 
 HttpFileResource::~HttpFileResource()
@@ -119,12 +121,12 @@ QString HttpFileResource::contentType()
     int index = fileExt.lastIndexOf(".");
 
     if(index < 0)
-        return QString();
+        return this->m_defaultMime;
 
     fileExt = fileExt.mid(index + 1);
 
     if(this->m_typeHash.contains(fileExt))
         return this->m_typeHash[fileExt];
 
-    return QString();
+    return this->m_defaultMime;
 }

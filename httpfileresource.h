@@ -23,6 +23,7 @@ public:
 private:
     QFile m_file;
     QHash<QString, QString> m_typeHash;
+    QString m_defaultMime;
     QString m_root;
     QString m_prefix;
 };
