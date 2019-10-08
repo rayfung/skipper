@@ -14,6 +14,8 @@
 #include <QCloseEvent>
 #include <QMenu>
 
+#include "qrdialog.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -132,6 +134,7 @@ void MainWindow::enableInputUI(bool val)
     ui->pushButtonStartServer->setEnabled(val);
     ui->pushButtonStopServer->setEnabled(!val);
     ui->pushButtonCopyURL->setEnabled(!val);
+    ui->pushButtonCopyQRCode->setEnabled(!val);
 }
 
 QStringList MainWindow::getAllIP()
@@ -257,6 +260,22 @@ void MainWindow::updatePathPrefixPreview()
 
 void MainWindow::on_pushButtonCopyURL_clicked()
 {
+    QString url = getSelectedURL();
+    QApplication::clipboard()->setText(url);
+}
+
+void MainWindow::on_pushButtonCopyQRCode_clicked()
+{
+    QString url = getSelectedURL();
+    QrDialog dialog;
+
+    dialog.setUrlString(url);
+    dialog.copyQrCode();
+    dialog.exec();
+}
+
+QString MainWindow::getSelectedURL()
+{
     QModelIndex index = ui->treeViewFileSystem->currentIndex();
     QModelIndex rootIndex = fsModel->index(fsModel->rootPath());
 
@@ -280,6 +299,10 @@ void MainWindow::on_pushButtonCopyURL_clicked()
             url += "/" + QUrl::toPercentEncoding(list.at(i));
         }
 
-        QApplication::clipboard()->setText(url);
+        return url;
+    }
+    else
+    {
+        return QString();
     }
 }

@@ -228,6 +228,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pushButtonCopyQRCode">
+          <property name="text">
+           <string>复制二维码</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>

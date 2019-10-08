@@ -37,6 +37,8 @@ private slots:
 
     void systemTrayIconClicked(QSystemTrayIcon::ActivationReason reason);
 
+    void on_pushButtonCopyQRCode_clicked();
+
 protected:
     void closeEvent(QCloseEvent *);
 
@@ -49,6 +51,7 @@ private:
     void loadSettings();
     void saveSettings();
     void createTrayIcon();
+    QString getSelectedURL();
 
 private:
     Ui::MainWindow *ui;
