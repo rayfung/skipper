@@ -153,9 +153,15 @@ QStringList MainWindow::getAllIP()
             for(int j = 0; j < list.length(); ++j)
             {
                 QHostAddress addr = list.at(j).ip();
+                QAbstractSocket::NetworkLayerProtocol protocol = addr.protocol();
 
-                if(addr.protocol() == QAbstractSocket::IPv4Protocol)
-                    ipList.append(addr.toString());
+                if (protocol == QAbstractSocket::IPv4Protocol || protocol == QAbstractSocket::IPv6Protocol)
+                {
+                    if (addr.isLinkLocal() == false)
+                    {
+                        ipList.append(addr.toString());
+                    }
+                }
             }
         }
     }
@@ -173,7 +179,7 @@ void MainWindow::on_pushButtonStartServer_clicked()
 {
     QString rootPath = ui->lineEditPath->text();
     QString ipAddress = ui->comboBoxIP->currentText();
-    quint16 port = ui->spinBoxPort->value();
+    quint16 port = static_cast<quint16>(ui->spinBoxPort->value());
 
     if(!QFileInfo(rootPath).isDir())
     {
@@ -244,8 +250,18 @@ QString MainWindow::getPathPrefix()
 QString MainWindow::getUrlPrefix()
 {
     QString url = "http://";
+    QString ip = ui->comboBoxIP->currentText();
+    bool isIPv6 = ip.contains(':');
 
-    url += ui->comboBoxIP->currentText();
+    if (isIPv6)
+    {
+        url += QString("[%1]").arg(ip);
+    }
+    else
+    {
+        url += ip;
+    }
+
     if(ui->spinBoxPort->value() != 80)
         url += ":" + QString::number(ui->spinBoxPort->value());
     url += "/" + QUrl::toPercentEncoding(getPathPrefix());
